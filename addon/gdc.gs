@@ -38,8 +38,10 @@
 // NOTE: Check these before publishing! (and remove β if appropriate)
 var DEBUG = false;
 var LOG = false;
-var GDC_TITLE = 'Docs to Markdown'; // formerly GD2md-html, formerly gd2md-html
-var GDC_VERSION = '1.0β34'; // based on 1.0β33
+var GDC_TITLE = 'Docs to HTML Converter';
+var GDC_VERSION = '0.1'; // based on 1.0β34
+//var GDC_TITLE = 'Docs to Markdown'; // formerly GD2md-html, formerly gd2md-html
+//var GDC_VERSION = '1.0β34'; // based on 1.0β33
 
 // Version notes: significant changes (latest on top). (files changed)
 // - 1.0β34 (12 Dec. 2022): Clarify note about TOC -- needs blue links to create intra-doc links). (gdc)

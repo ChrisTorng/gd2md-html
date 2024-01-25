@@ -1,3 +1,13 @@
+# Docs to HTML Converter
+
+This project is a fork of original [Docs to Markdown](https://github.com/evbacher/gd2md-html). This project only focus on our need on HTML, that means Markdown is not under supported.
+
+We have a private Add-on, who ever interested on it, left your Google Account for private access to it.
+
+Below is the original README.md:
+
+---
+
 # Docs to Markdown (gd2md-html)
 
 Docs to Markdown is a free Google Docs add-on that converts a Google Doc to simple, readable Markdown or HTML text.
