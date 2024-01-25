@@ -959,21 +959,23 @@ gdc.handleImage = function(imageElement) {
   // Create image path/file name: 
   // Note that Google Docs export does not necessarily put them in order!
   // But there's no way to predict, so users will need to check.
-  gdc.imageCounter++;
-  var imagePath = gdc.defaultImagePath + 'image' + gdc.imageCounter +fileType;
+  //gdc.imageCounter++;
+  //var imagePath = gdc.defaultImagePath + 'image' + gdc.imageCounter +fileType;
+  var embeddedImage = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEYAAAAUCAAAAAAVAxSkAAABrUlEQVQ4y+3TPUvDQBgH8OdDOGa+oUMgk2MpdHIIgpSUiqC0OKirgxYX8QVFRQRpBRF8KShqLbgIYkUEteCgFVuqUEVxEIkvJFhae3m8S2KbSkcFBw9yHP88+eXucgH8kQZ/jSm4VDaIy9RKCpKac9NKgU4uEJNwhHhK3qvPBVO8rxRWmFXPF+NSM1KVMbwriAMwhDgVcrxeMZm85GR0PhvGJAAmyozJsbsxgNEir4iEjIK0SYqGd8sOR3rJAGN2BCEkOxhxMhpd8Mk0CXtZacxi1hr20mI/rzgnxayoidevcGuHXTC/q6QuYSMt1jC+gBIiMg12v2vb5NlklChiWnhmFZpwvxDGzuUzV8kOg+N8UUvNBp64vy9q3UN7gDXhwWLY2nMC3zRDibfsY7wjEkY79CdMZhrxSqqzxf4ZRPXwzWJirMicDa5KwiPeARygHXKNMQHEy3rMopDR20XNZGbJzUtrwDC/KshlLDWyqdmhxZzCsdYmf2fWZPoxCEDyfIvdtNQH0PRkH6Q51g8rFO3Qzxh2LbItcDCOpmuOsV7ntNaERe3v/lP/zO8yn4N+yNPrekmPAAAAAElFTkSuQmCC';
+  gdc.writeStringToBuffer('<img src="' + embeddedImage + '" alt="image" title="image">');
 
-  // Put image markup here regardless of whether the image was stored or not.
-  gdc.hasImages = true; // So we can provide a note at the top.
-  gdc.alert('inline image link here (to ' + imagePath
-    + '). Store image on your image server and adjust path/filename/extension if necessary.');
-  if (gdc.isHTML) {
-    // Width is an optional attribute for img tag, but let's leave the hint.
-    gdc.writeStringToBuffer('\n<img src="'
-      + imagePath
-      + '" width="" alt="alt_text" title="image_tooltip">\n');
-  } else {
-    gdc.writeStringToBuffer('<newline>![alt_text](' + imagePath +' "image_tooltip")<newline>');
-  }
+  // // Put image markup here regardless of whether the image was stored or not.
+  // gdc.hasImages = true; // So we can provide a note at the top.
+  // gdc.alert('inline image link here (to ' + imagePath
+  //   + '). Store image on your image server and adjust path/filename/extension if necessary.');
+  // if (gdc.isHTML) {
+  //   // Width is an optional attribute for img tag, but let's leave the hint.
+  //   gdc.writeStringToBuffer('\n<img src="'
+  //     + imagePath
+  //     + '" width="" alt="alt_text" title="image_tooltip">\n');
+  // } else {
+  //   gdc.writeStringToBuffer('<newline>![alt_text](' + imagePath +' "image_tooltip")<newline>');
+  // }
 };
 
 gdc.isBullet = function(glyphType) {
