@@ -2,7 +2,7 @@
 
 This project is a fork of original [Docs to Markdown](https://github.com/evbacher/gd2md-html). This project only focus on our need on HTML, that means Markdown is not under supported.
 
-These scripts are working on my account, but still can't figure out how to share this testing add-on to anyone who wish to test it. See this issue [How to publish it for anyone who wants to test and help?](https://github.com/ChrisTorng/gd2md-html/discussions/6) for details.
+These scripts are working on my account, but still can't figure out how to share this testing add-on to anyone who wish to test it. See this issue [How to publish it for anyone who wants to test and help?](https://github.com/ChrisTorng/gd2md-html/discussions/6) for details. There is a manually setup on [wiki](https://github.com/ChrisTorng/gd2md-html/wiki).
 
 Below is the original README.md:
 
