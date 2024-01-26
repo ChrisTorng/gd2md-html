@@ -38,8 +38,8 @@
 // NOTE: Check these before publishing! (and remove β if appropriate)
 var DEBUG = false;
 var LOG = false;
-var GDC_TITLE = 'Docs to HTML Converter';
-var GDC_VERSION = '0.1'; // based on 1.0β34
+var GDC_VERSION = '0.1'; // based on gd2md-html 1.0β34
+var GDC_TITLE = 'Docs to HTML Converter ' + GDC_VERSION;
 //var GDC_TITLE = 'Docs to Markdown'; // formerly GD2md-html, formerly gd2md-html
 //var GDC_VERSION = '1.0β34'; // based on 1.0β33
 
@@ -959,7 +959,9 @@ gdc.handleImage = function(imageElement) {
   var imgBytes = imgBlob.getBytes();
   var imgData = Utilities.base64Encode(imgBytes);
   gdc.writeStringToBuffer('<img src="data:image/' + fileType + ';base64,' + imgData + '" alt="image" title="image">');
- 
+  // Cause of "Array length 50000001 exceeds supported capacity limit." error, flush every time
+  gdc.flushBuffer();
+
   // Create image path/file name: 
   // Note that Google Docs export does not necessarily put them in order!
   // But there's no way to predict, so users will need to check.
