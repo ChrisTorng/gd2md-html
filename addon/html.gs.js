@@ -44,7 +44,7 @@ html.tablePrefix = '  ';
 html.doHtml = function(config) {
   // Basically, we can use the same code as doMarkdown, just change the markup.
   gdc.useHtml();
-  
+
   gdc.config(config);
   // Get the body elements.
   var elements = gdc.getElements();

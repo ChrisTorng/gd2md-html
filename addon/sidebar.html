@@ -199,8 +199,8 @@ For more details, click the Docs link above.`
     if (document.getElementById('reckless_mode').checked) {
       config.recklessMode = true;
     }
-};
-    
+  };
+
   // Make the calls to the server, and send some callbacks for
   // the server to call when the conversion is done.
   
@@ -220,10 +220,18 @@ For more details, click the Docs link above.`
       .convertToMarkdown(config);
   }
   
+  let imageSrcs;
   // HTML conversion.
   function html() {
     setConfig();
+//    config.images = images;
+
     var text = document.getElementById('text');
+    // images = getImages(text.value);
+    console.log(imageSrcs);
+    config.imageSrcs = imageSrcs;
+    console.log(config.imageSrcs);
+
     text.value = 'Converting text to HTML...';
     text.value += '\n\n * Your output will appear here.';
     
@@ -233,6 +241,30 @@ For more details, click the Docs link above.`
       .convertToHTML(config);
   }
 
+  document.getElementById('text').addEventListener('paste', function(event) {
+    event.preventDefault();
+
+    var clipboardData = event.clipboardData || window.clipboardData;
+
+    var copiedDoc = clipboardData.getData('text/html');
+    console.log(copiedDoc);
+    imageSrcs = getImageSrcs(copiedDoc);
+  });
+
+  function getImageSrcs(copiedDoc) {
+    var div = document.createElement('div');
+    div.innerHTML = copiedDoc;
+    var images = div.getElementsByTagName('img');
+    console.log(images);
+
+    // get images all src
+    var imageSrcs = [];
+    for (var i = 0; i < images.length; i++) {
+      imageSrcs.push(images[i].src);
+    }
+    console.log(imageSrcs);
+    return imageSrcs;
+  }
 
 // These are callback functions that we pass to the server.
 // We pass one for a successful operation and one for failure.

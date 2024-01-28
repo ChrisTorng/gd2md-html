@@ -38,7 +38,7 @@
 // NOTE: Check these before publishing! (and remove β if appropriate)
 var DEBUG = false;
 var LOG = false;
-var GDC_VERSION = '0.1'; // based on gd2md-html 1.0β34
+var GDC_VERSION = '0.1.2'; // based on gd2md-html 1.0β34
 var GDC_TITLE = 'Docs to HTML Converter ' + GDC_VERSION;
 //var GDC_TITLE = 'Docs to Markdown'; // formerly GD2md-html, formerly gd2md-html
 //var GDC_VERSION = '1.0β34'; // based on 1.0β33
@@ -120,6 +120,13 @@ gdc.config = function(config) {
   if (config.recklessMode === true) {
     gdc.recklessMode = true;
   }
+  console.log("before config.imageSrcs", config.imageSrcs);
+  if (config.imageSrcs) {
+    console.log("pass if config.imageSrcs");
+    gdc.imageSrcs = config.imageSrcs;
+    console.log("after config.imageSrcs", gdc.imageSrcs);
+  }
+  console.log("after config.imageSrcs", config.imageSrcs);
 };
 
 // Setup for each conversion run.
@@ -942,25 +949,34 @@ gdc.handleInlineDrawing = function() {
   }
 };
 
+var imageIndex = -1;
 gdc.handleImage = function(imageElement) {
-  // Figure out image file information for the link.
-  var img = imageElement.asInlineImage();
-  var imgBlob = img.getBlob();
-  var contentType = imgBlob.getContentType();
-  var fileType = '';
-  if (contentType === 'image/jpeg') {
-    fileType = 'jpg';
-  } else if (contentType === 'image/png') {
-    fileType = 'png';
-  } else if (contentType === 'image/gif') {
-    fileType = 'gif';
+  console.log(gdc.imageSrcs, imageIndex);
+  if (gdc.imageSrcs && gdc.imageSrcs.length > imageIndex) {
+    var imgSrc = gdc.imageSrcs[++imageIndex];
+    gdc.writeStringToBuffer('<img src="' + imgSrc + '">');
+  } else {
+    console.log('no images', gdc.images, gdc.imageSrcs.length, imageIndex);
   }
 
-  var imgBytes = imgBlob.getBytes();
-  var imgData = Utilities.base64Encode(imgBytes);
-  gdc.writeStringToBuffer('<img src="data:image/' + fileType + ';base64,' + imgData + '" alt="image" title="image">');
-  // Cause of "Array length 50000001 exceeds supported capacity limit." error, flush every time
-  gdc.flushBuffer();
+  // Figure out image file information for the link.
+  // var img = imageElement.asInlineImage();
+  // var imgBlob = img.getBlob();
+  // var contentType = imgBlob.getContentType();
+  // var fileType = '';
+  // if (contentType === 'image/jpeg') {
+  //   fileType = 'jpg';
+  // } else if (contentType === 'image/png') {
+  //   fileType = 'png';
+  // } else if (contentType === 'image/gif') {
+  //   fileType = 'gif';
+  // }
+
+  // var imgBytes = imgBlob.getBytes();
+  // var imgData = Utilities.base64Encode(imgBytes);
+  // gdc.writeStringToBuffer('<img src="data:image/' + fileType + ';base64,' + imgData + '" alt="image" title="image">');
+  // // Cause of "Array length 50000001 exceeds supported capacity limit." error, flush every time
+  // gdc.flushBuffer();
 
   // Create image path/file name: 
   // Note that Google Docs export does not necessarily put them in order!

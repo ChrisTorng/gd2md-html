@@ -55,7 +55,11 @@ function convertToMarkdown(config) {
 
 // This is the main public function the client will call (from sidebar.html).
 function convertToHTML(config) {
+  console.log('convertToHTML');
+//  console.log('convertToHTML', config);
   gdc.init(gdc.docTypes.html);
+  console.log('gdc.init');
+
   // Pass config to conversion function.
   return html.doHtml(config);
 }
