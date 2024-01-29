@@ -83,6 +83,21 @@ writing-mode:horizontal-tb;
 -webkit-rtl-ordering:logical;
 -webkit-border-image:none;
 }
+
+html {
+  height: 100%;
+  margin: 0px;
+  padding: 0;
+}
+
+body {
+  height: 98%;
+}
+
+#text {
+  width: 100%;
+  height: 75%;
+}
 </style>
 <!--<a target="_blank" title="Donate for social justice!" class="gdcButton" href="https://www.buymeacoffee.com/docstomarkdown"> Donate</a>-->
 
@@ -137,7 +152,7 @@ Use reckless mode (no alerts)
 <div id="help"></div>
 
 <!-- Text area for initial instructions and output. -->
-<textarea id="text" name="" class=mono rows=40 cols=32 border=none>
+<textarea id="text" name="" class=mono border=none>
 </textarea>
 
 <script>
@@ -153,12 +168,13 @@ Use reckless mode (no alerts)
 At the end, it will show the converted result and copy to your clipboard.`;
 
   function help(text) {
+    text = text ?? helpText;
     var helpElement = document.getElementById('help');
     helpElement.innerText = text;
   }
   
   // Set help text in textarea.
-  help(helpText);
+  help();
 
 // Client-side JavaScript that initiates communication with the
 // server and handles messages from the server.
@@ -258,6 +274,15 @@ At the end, it will show the converted result and copy to your clipboard.`;
 // These are callback functions that we pass to the server.
 // We pass one for a successful operation and one for failure.
   
+function copyTextAndHtml(html) {
+  return navigator.clipboard.write([
+    new ClipboardItem({
+      'text/plain': new Blob([html], { type: 'text/plain' }),
+      'text/html': new Blob([html], { type: 'text/html' })
+    })
+  ]);
+}
+
   // Whatever the server returns is the serverMessage parameter.
   function displayServerMessage(serverMessage) {    
     // Show the server message in the text area.
@@ -266,7 +291,7 @@ At the end, it will show the converted result and copy to your clipboard.`;
 
     // Save the result to the clipboard (and add an error message if the write fails).
     // navigator.clipboard.writeText() returns a promise that we need to deal with.
-    navigator.clipboard.writeText(serverMessage).then(clipSuccess, clipError);
+    copyTextAndHtml(serverMessage).then(clipSuccess, clipError);
   }
   
   // Whatever the server returns is the serverError parameter.
@@ -278,6 +303,7 @@ At the end, it will show the converted result and copy to your clipboard.`;
   function clipSuccess(result) {
     // All is well: notify for now until everyone gets used to it.
     help(`Output copied to clipboard!
+  It contains text/plain HTML, and text/html formats.
   You can copy&paste again to convert another part, without clearing anything below.`);
   }
   function clipError(error) {
