@@ -120,13 +120,9 @@ gdc.config = function(config) {
   if (config.recklessMode === true) {
     gdc.recklessMode = true;
   }
-  console.log("before config.imageSrcs", config.imageSrcs);
   if (config.imageSrcs) {
-    console.log("pass if config.imageSrcs");
     gdc.imageSrcs = config.imageSrcs;
-    console.log("after config.imageSrcs", gdc.imageSrcs);
   }
-  console.log("after config.imageSrcs", config.imageSrcs);
 };
 
 // Setup for each conversion run.
@@ -951,12 +947,11 @@ gdc.handleInlineDrawing = function() {
 
 var imageIndex = -1;
 gdc.handleImage = function(imageElement) {
-  console.log(gdc.imageSrcs, imageIndex);
   if (gdc.imageSrcs && gdc.imageSrcs.length > imageIndex) {
     var imgSrc = gdc.imageSrcs[++imageIndex];
     gdc.writeStringToBuffer('<img src="' + imgSrc + '">');
   } else {
-    console.log('no images', gdc.images, gdc.imageSrcs.length, imageIndex);
+    gdc.alert('no more images, total image srcs:' + gdc.imageSrcs.length + ', but now index:' + imageIndex);
   }
 
   // Figure out image file information for the link.

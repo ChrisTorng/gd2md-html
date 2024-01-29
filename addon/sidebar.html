@@ -89,20 +89,18 @@ writing-mode:horizontal-tb;
 
 <!-- Top of sidebar UI elements. -->
 <!--input type="button" class="blue" value="Markdown" onclick="markdown()"-->
-<input type="button" class="blue" value="HTML" onclick="html()">
+<!-- <input type="button" class="blue" value="HTML" onclick="html()"> -->
 
 <!--
 <input type="button" class="blue" value="Help" onclick="help()">
 -->
-
-<p>
 
 <!--
 <input class="invisible" type="button" onclick="html()" value="test">
 -->
 
 <!-- Options. -->
-<label>
+<!-- <label>
 <input type="checkbox" id="demote_headings">
 Demote headings (H1 &rarr; H2, etc.)
 </label>
@@ -128,37 +126,39 @@ Suppress info comment
 <label>
 <input type="checkbox" id="reckless_mode">
 Use reckless mode (no alerts)
-</label>
+</label> -->
 
 <!-- Docs, bug link. -->
-<br>
 <div style="text-align: left;"> 
-<a target="_blank" onclick="help()">Help</a>,
-<a target="_blank" href="https://github.com/evbacher/gd2md-html/wiki">Docs</a>,
-<a target="_blank" href="https://github.com/evbacher/gd2md-html/issues">Bugs</a>
+  <a target="_blank" onclick="help()">Help</a>,
+  <a target="_blank" href="https://github.com/ChrisTorng/gd2md-html/wiki">Docs</a>,
+  <a target="_blank" href="https://github.com/ChrisTorng/gd2md-html/issues">Bugs</a>
 </div>
+<div id="help"></div>
 
 <!-- Text area for initial instructions and output. -->
 <textarea id="text" name="" class=mono rows=40 cols=32 border=none>
 </textarea>
 
 <script>
-var helpText = `
-Choose Markdown or HTML (or Donate!).
+// var helpText = `
+// Choose Markdown or HTML (or Donate!).
 
-* Default: convert entire doc.
-* Select text to limit scope.
+// * Default: convert entire doc.
+// * Select text to limit scope.
 
-For more details, click the Docs link above.`
-;
-   
-  function help() {
-    var text = document.getElementById('text');
-    text.value = helpText;
+// For more details, click the Docs link above.`
+// ;
+  var helpText = `Copy part or all the doc and paste down below to start converting.
+At the end, it will show the converted result and copy to your clipboard.`;
+
+  function help(text) {
+    var helpElement = document.getElementById('help');
+    helpElement.innerText = text;
   }
   
   // Set help text in textarea.
-  help();
+  help(helpText);
 
 // Client-side JavaScript that initiates communication with the
 // server and handles messages from the server.
@@ -181,24 +181,24 @@ For more details, click the Docs link above.`
     config.recklessMode = false;
 
     // Config settings from UI.
-    if (document.getElementById('demote_headings').checked) {
-      config.demoteHeadings = true;
-    }
-    if (document.getElementById('html_headings').checked) {
-      config.htmlHeadings = true;
-    }
-    if (document.getElementById('wrap_html').checked) {
-      config.wrapHTML = true;
-    }
-    if (document.getElementById('render_html_tags').checked) {
-      config.renderHTMLTags = true;
-    }
-    if (document.getElementById('suppress_info').checked) {
-      config.suppressInfo = true;
-    }
-    if (document.getElementById('reckless_mode').checked) {
-      config.recklessMode = true;
-    }
+    // if (document.getElementById('demote_headings').checked) {
+    //   config.demoteHeadings = true;
+    // }
+    // if (document.getElementById('html_headings').checked) {
+    //   config.htmlHeadings = true;
+    // }
+    // if (document.getElementById('wrap_html').checked) {
+    //   config.wrapHTML = true;
+    // }
+    // if (document.getElementById('render_html_tags').checked) {
+    //   config.renderHTMLTags = true;
+    // }
+    // if (document.getElementById('suppress_info').checked) {
+    //   config.suppressInfo = true;
+    // }
+    // if (document.getElementById('reckless_mode').checked) {
+    //   config.recklessMode = true;
+    // }
   };
 
   // Make the calls to the server, and send some callbacks for
@@ -207,9 +207,8 @@ For more details, click the Docs link above.`
   // Markdown conversion.
   function markdown() {  
     setConfig();
-    var text = document.getElementById('text');
-    text.value = 'Converting text to Markdown...';
-    text.value += '\n\n * Your output will appear here.';
+    help(`Converting text to Markdown...
+* Your output will appear here.`);
     
     // Call the main add-on function (convertX()) on the server.
     // We also send the names of callback functions to call in case of
@@ -220,20 +219,13 @@ For more details, click the Docs link above.`
       .convertToMarkdown(config);
   }
   
-  let imageSrcs;
   // HTML conversion.
-  function html() {
+  function html(imageSrcs) {
     setConfig();
-//    config.images = images;
-
-    var text = document.getElementById('text');
-    // images = getImages(text.value);
-    console.log(imageSrcs);
     config.imageSrcs = imageSrcs;
-    console.log(config.imageSrcs);
 
-    text.value = 'Converting text to HTML...';
-    text.value += '\n\n * Your output will appear here.';
+    help(`Converting text to HTML...
+* Your output will appear here.`);
     
     google.script.run
       .withSuccessHandler(displayServerMessage)
@@ -245,24 +237,21 @@ For more details, click the Docs link above.`
     event.preventDefault();
 
     var clipboardData = event.clipboardData || window.clipboardData;
-
     var copiedDoc = clipboardData.getData('text/html');
-    console.log(copiedDoc);
-    imageSrcs = getImageSrcs(copiedDoc);
+    var imageSrcs = getImageSrcs(copiedDoc);
+    html(imageSrcs);
   });
 
   function getImageSrcs(copiedDoc) {
     var div = document.createElement('div');
     div.innerHTML = copiedDoc;
     var images = div.getElementsByTagName('img');
-    console.log(images);
 
     // get images all src
     var imageSrcs = [];
     for (var i = 0; i < images.length; i++) {
       imageSrcs.push(images[i].src);
     }
-    console.log(imageSrcs);
     return imageSrcs;
   }
 
@@ -274,28 +263,29 @@ For more details, click the Docs link above.`
     // Show the server message in the text area.
     var text = document.getElementById('text');
     text.value = serverMessage;
+
     // Save the result to the clipboard (and add an error message if the write fails).
     // navigator.clipboard.writeText() returns a promise that we need to deal with.
-    navigator.clipboard.writeText(text.value).then(clipSuccess, clipError);
+    navigator.clipboard.writeText(serverMessage).then(clipSuccess, clipError);
   }
   
   // Whatever the server returns is the serverError parameter.
   function displayServerError(serverError) {
-    var text = document.getElementById('text');
-    text.value = serverError;
+    help(serverError);
   }
   
   // Test to see the result of the Promise from writing to the clipboard.
   function clipSuccess(result) {
     // All is well: notify for now until everyone gets used to it.
-    text.value = '<!-- Output copied to clipboard! -->\n\n' + text.value;
+    help(`Output copied to clipboard!
+  You can copy&paste again to convert another part, without clearing anything below.`);
   }
   function clipError(error) {
-    var text = document.getElementById('text');
+    // var text = document.getElementById('text');
     // See https://bugs.chromium.org/p/chromium/issues/detail?id=1074489
     // Don't bother people with error message: they'll need to cut and paste output as usual.
     //text.value = '<!-- Output not copied to clipboard: See issue 1074489 at bugs.chromium.org -->\n\n' + text.value;
-    text.value = '<!-- Copy and paste the converted output. -->\n\n' + text.value;
+    help(`Copy failed. You need to select all and copy manually.`);
   }
   
 </script>
