@@ -148,6 +148,7 @@ Use reckless mode (no alerts)
   <a target="_blank" onclick="help()">Help</a>,
   <a target="_blank" href="https://github.com/ChrisTorng/gd2md-html/wiki">Docs</a>,
   <a target="_blank" href="https://github.com/ChrisTorng/gd2md-html/issues">Bugs</a>
+  <button id="copyAgain" onclick="copyAgain()" style="display:none;">Copy again</button>
 </div>
 <div id="help"></div>
 
@@ -234,6 +235,9 @@ At the end, it will show the converted result and copy to your clipboard.`;
       .withFailureHandler(displayServerError)
       .convertToMarkdown(config);
   }
+
+  const textbox = document.getElementById('text');
+  const copyAgainButton = document.getElementById('copyAgain');
   
   // HTML conversion.
   function html(imageSrcs) {
@@ -242,6 +246,8 @@ At the end, it will show the converted result and copy to your clipboard.`;
 
     help(`Converting text to HTML...
 * Your output will appear here.`);
+    textbox.value = 'Converting...';
+    copyAgainButton.style.display = 'none';
     
     google.script.run
       .withSuccessHandler(displayServerMessage)
@@ -249,7 +255,7 @@ At the end, it will show the converted result and copy to your clipboard.`;
       .convertToHTML(config);
   }
 
-  document.getElementById('text').addEventListener('paste', function(event) {
+  textbox.addEventListener('paste', function(event) {
     event.preventDefault();
 
     var clipboardData = event.clipboardData || window.clipboardData;
@@ -288,6 +294,7 @@ function copyTextAndHtml(html) {
     // Show the server message in the text area.
     var text = document.getElementById('text');
     text.value = serverMessage;
+    copyAgainButton.style.display = '';
 
     // Save the result to the clipboard (and add an error message if the write fails).
     // navigator.clipboard.writeText() returns a promise that we need to deal with.
@@ -303,15 +310,20 @@ function copyTextAndHtml(html) {
   function clipSuccess(result) {
     // All is well: notify for now until everyone gets used to it.
     help(`Output copied to clipboard!
-  It contains text/plain HTML, and text/html formats.
-  You can copy&paste again to convert another part, without clearing anything below.`);
+  It contains text/plain HTML and text/html formats.
+  You can copy from doc and paste to convert again, without clearing anything below.`);
   }
   function clipError(error) {
     // var text = document.getElementById('text');
     // See https://bugs.chromium.org/p/chromium/issues/detail?id=1074489
     // Don't bother people with error message: they'll need to cut and paste output as usual.
     //text.value = '<!-- Output not copied to clipboard: See issue 1074489 at bugs.chromium.org -->\n\n' + text.value;
-    help(`Copy failed. You need to select all and copy manually.`);
+    help(`Copy failed. You need to select all and copy manually. That will be text/plain HTML only.`);
+  }
+
+  function copyAgain() {
+    var text = document.getElementById('text');
+    copyTextAndHtml(text.value).then(clipSuccess, clipError);
   }
   
 </script>
