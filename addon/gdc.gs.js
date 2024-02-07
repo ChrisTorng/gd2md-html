@@ -947,9 +947,15 @@ gdc.handleInlineDrawing = function() {
 
 var imageIndex = -1;
 gdc.handleImage = function(imageElement) {
+  var inlineImage = imageElement.asInlineImage();
+  var altDescription  = inlineImage.getAltDescription();
+  var altAttribute = altDescription ? ' alt="' + altDescription + '"' : '';
+  var title = inlineImage.getAltTitle();
+  var titleAttribute = title ? ' title="' + title + '"' : '';
+
   if (gdc.imageSrcs && gdc.imageSrcs.length > imageIndex) {
     var imgSrc = gdc.imageSrcs[++imageIndex];
-    gdc.writeStringToBuffer('<img src="' + imgSrc + '">');
+    gdc.writeStringToBuffer('<img src="' + imgSrc + '"' + altAttribute + titleAttribute + '/>');
   } else {
     gdc.alert('no more images, total image srcs:' + gdc.imageSrcs.length + ', but now index:' + imageIndex);
   }
