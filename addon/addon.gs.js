@@ -29,7 +29,12 @@ var ui = DocumentApp.getUi();
 function onOpen() {
   ui.createAddonMenu()
       .addItem('Convert', 'showSidebar')
-      .addToUi();  
+      .addToUi();
+  ui.createMenu('Substack')
+    .addItem('Register now', 'insertRegisterNow')
+    .addItem('Share this post', 'insertShareThisPost')
+    .addItem('Image caption', 'insertImageCaption')
+    .addToUi();
 }
 
 // When this is installed, call onOpen.
@@ -66,4 +71,44 @@ function convertToHTML(config) {
 
 function convertText(text) {
   return text;
+}
+
+function insertRegisterNow() {
+  return insertParagraphAtCursor("[[Register now]]");
+}
+
+function insertShareThisPost() {
+  return insertParagraphAtCursor("[[Share this post]]");
+}
+
+function insertImageCaption() {
+  return insertParagraphAtCursor("[[Image caption: ]]", -2);
+}
+
+function insertParagraphAtCursor(text, cursorPos) {
+  if (cursorPos === undefined) {
+    cursorPos = 0;
+  }
+
+  var doc = DocumentApp.getActiveDocument();
+  var cursor = doc.getCursor();
+  if (cursor) {
+    var element = cursor.getElement();
+    while (element !== null && element.getParent() !== null &&
+      element.getParent().getType() !== DocumentApp.ElementType.BODY_SECTION) {
+      element = element.getParent();
+    }
+    if (element !== null && element.getParent() !== null) {
+      var body = doc.getBody();
+      var index = body.getChildIndex(element);
+      var paragraph = body.insertParagraph(index + 1, text);
+      var position;
+      if (cursorPos > 0) {
+        position = doc.newPosition(paragraph.getChild(0), cursorPos);
+      } else {
+        position = doc.newPosition(paragraph.getChild(0), text.length + cursorPos);
+      }
+      doc.setCursor(position);
+    }
+  }
 }

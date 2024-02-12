@@ -99,6 +99,47 @@ body {
   height: 75%;
 }
 </style>
+<style>
+/* Dropdown button */
+.dropbtn {
+  background-color: #008000;
+  padding: 4px 20px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+}
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.show {
+  display: block;
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {background-color: #f1f1f1}
+</style>
 <!--<a target="_blank" title="Donate for social justice!" class="gdcButton" href="https://www.buymeacoffee.com/docstomarkdown"> Donate</a>-->
 
 
@@ -143,6 +184,15 @@ Suppress info comment
 Use reckless mode (no alerts)
 </label> -->
 
+<div>
+  <button onclick="dropdown()" class="dropbtn">Substack</button>
+  <div id="myDropdown" class="dropdown-content">
+    <a href="#" onclick="insert('[[Register now]]')">Register now</a>
+    <a href="#" onclick="insert('[[Share this post]]')">Share this post</a>
+    <a href="#" onclick="insert('[[Image caption: ]]', -2)">Image caption</a>
+  </div>
+</div>
+
 <!-- Docs, bug link. -->
 <div style="text-align: left;"> 
   <a target="_blank" onclick="help()">Help</a>,
@@ -157,6 +207,34 @@ Use reckless mode (no alerts)
 </textarea>
 
 <script>
+  function dropdown() {
+    document.getElementById("myDropdown").classList.toggle("show");
+  }
+
+  // Close the dropdown if the user clicks outside of it
+  window.onclick = function(event) {
+    if (!event.target.matches('.dropbtn')) {
+      var dropdowns = document.getElementsByClassName("dropdown-content");
+      var i;
+      for (i = 0; i < dropdowns.length; i++) {
+        var openDropdown = dropdowns[i];
+        if (openDropdown.classList.contains('show')) {
+          openDropdown.classList.remove('show');
+        }
+      }
+    }
+  }
+
+  function serverRun() {
+    return google.script.run
+      .withSuccessHandler(displayServerMessage)
+      .withFailureHandler(displayServerError);
+  }
+  function insert(text, cursorPos = 0) {
+    document.getElementById("myDropdown").classList.toggle("show");
+    serverRun().insertParagraphAtCursor(text, cursorPos);
+  }
+
 // var helpText = `
 // Choose Markdown or HTML (or Donate!).
 
@@ -230,10 +308,7 @@ At the end, it will show the converted result and copy to your clipboard.`;
     // Call the main add-on function (convertX()) on the server.
     // We also send the names of callback functions to call in case of
     // success or error.
-    google.script.run
-      .withSuccessHandler(displayServerMessage)
-      .withFailureHandler(displayServerError)
-      .convertToMarkdown(config);
+    serverRun().convertToMarkdown(config);
   }
 
   const textbox = document.getElementById('text');
@@ -249,10 +324,7 @@ At the end, it will show the converted result and copy to your clipboard.`;
     textbox.value = 'Converting...';
     copyAgainButton.style.display = 'none';
     
-    google.script.run
-      .withSuccessHandler(displayServerMessage)
-      .withFailureHandler(displayServerError)
-      .convertToHTML(config);
+    serverRun().convertToHTML(config);
   }
 
   textbox.addEventListener('paste', function(event) {
