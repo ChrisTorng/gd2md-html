@@ -187,9 +187,9 @@ Use reckless mode (no alerts)
 <div>
   <button onclick="dropdown()" class="dropbtn">Substack</button>
   <div id="myDropdown" class="dropdown-content">
-    <a href="#" onclick="insert('[[Register now]]')">Register now</a>
+    <a href="#" onclick="insert('[[Subscribe now]]')">Subscribe now</a>
     <a href="#" onclick="insert('[[Share this post]]')">Share this post</a>
-    <a href="#" onclick="insert('[[Image caption: ]]', -2)">Image caption</a>
+    <a href="#" onclick="insertAfterSelectedImage('[[Image caption: ]]', -2)">Image caption</a>
   </div>
 </div>
 
@@ -225,14 +225,21 @@ Use reckless mode (no alerts)
     }
   }
 
-  function serverRun() {
+  function serverRun(successHandler = displayServerMessage) {
+    help('Server running...');
     return google.script.run
-      .withSuccessHandler(displayServerMessage)
+      .withSuccessHandler(successHandler)
       .withFailureHandler(displayServerError);
   }
+
   function insert(text, cursorPos = 0) {
     document.getElementById("myDropdown").classList.toggle("show");
     serverRun().insertParagraphAtCursor(text, cursorPos);
+  }
+
+  function insertAfterSelectedImage(text, cursorPos = 0) {
+    document.getElementById("myDropdown").classList.toggle("show");
+    serverRun().insertAfterSelectedImage(text, cursorPos);
   }
 
 // var helpText = `
@@ -308,7 +315,7 @@ At the end, it will show the converted result and copy to your clipboard.`;
     // Call the main add-on function (convertX()) on the server.
     // We also send the names of callback functions to call in case of
     // success or error.
-    serverRun().convertToMarkdown(config);
+    serverRun(displayServerMessageAndCopy).convertToMarkdown(config);
   }
 
   const textbox = document.getElementById('text');
@@ -324,7 +331,7 @@ At the end, it will show the converted result and copy to your clipboard.`;
     textbox.value = 'Converting...';
     copyAgainButton.style.display = 'none';
     
-    serverRun().convertToHTML(config);
+    serverRun(displayServerMessageAndCopy).convertToHTML(config);
   }
 
   textbox.addEventListener('paste', function(event) {
@@ -364,12 +371,18 @@ function copyTextAndHtml(html) {
   // Whatever the server returns is the serverMessage parameter.
   function displayServerMessage(serverMessage) {    
     // Show the server message in the text area.
+    help(`${serverMessage}
+${helpText}`);
+  }
+  
+  function displayServerMessageAndCopy(serverMessage) {    
+    // Show the server message in the text area.
     var text = document.getElementById('text');
     text.value = serverMessage;
-    copyAgainButton.style.display = '';
 
     // Save the result to the clipboard (and add an error message if the write fails).
     // navigator.clipboard.writeText() returns a promise that we need to deal with.
+    copyAgainButton.style.display = '';
     copyTextAndHtml(serverMessage).then(clipSuccess, clipError);
   }
   
@@ -385,6 +398,7 @@ function copyTextAndHtml(html) {
   It contains text/plain HTML and text/html formats.
   You can copy from doc and paste to convert again, without clearing anything below.`);
   }
+  
   function clipError(error) {
     // var text = document.getElementById('text');
     // See https://bugs.chromium.org/p/chromium/issues/detail?id=1074489

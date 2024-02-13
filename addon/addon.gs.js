@@ -28,10 +28,9 @@ var ui = DocumentApp.getUi();
 // Create the add-on menu item.
 function onOpen() {
   ui.createAddonMenu()
-      .addItem('Convert', 'showSidebar')
-      .addToUi();
-  ui.createMenu('Substack')
-    .addItem('Register now', 'insertRegisterNow')
+    .addItem('Sidebar', 'showSidebar')
+    .addSeparator()
+    .addItem('Subscribe now', 'insertSubscribeNow')
     .addItem('Share this post', 'insertShareThisPost')
     .addItem('Image caption', 'insertImageCaption')
     .addToUi();
@@ -73,8 +72,8 @@ function convertText(text) {
   return text;
 }
 
-function insertRegisterNow() {
-  return insertParagraphAtCursor("[[Register now]]");
+function insertSubscribeNow() {
+  return insertParagraphAtCursor("[[Subscribe now]]");
 }
 
 function insertShareThisPost() {
@@ -82,7 +81,7 @@ function insertShareThisPost() {
 }
 
 function insertImageCaption() {
-  return insertParagraphAtCursor("[[Image caption: ]]", -2);
+  return insertAfterSelectedImage("[[Image caption: ]]", -2);
 }
 
 function insertParagraphAtCursor(text, cursorPos) {
@@ -109,6 +108,48 @@ function insertParagraphAtCursor(text, cursorPos) {
         position = doc.newPosition(paragraph.getChild(0), text.length + cursorPos);
       }
       doc.setCursor(position);
+      return text + ' inserted.';
+    }
+    return alert('Cursor not under body section.');
+  }
+  return alert('No cursor found.');
+}
+
+function insertAfterSelectedImage(text, cursorPos) {
+  if (cursorPos === undefined) {
+    cursorPos = 0;
+  }
+
+  var doc = DocumentApp.getActiveDocument();
+  var selection = doc.getSelection();
+
+  if (selection) {
+    var elements = selection.getSelectedElements();
+
+    if (elements.length === 1) {
+      var element = elements[0].getElement();
+
+      if (element.getType() === DocumentApp.ElementType.INLINE_IMAGE) {
+        var parent = element.getParent();
+        var body = doc.getBody();
+        var parentIndex = body.getChildIndex(parent);
+
+        var paragraph = body.insertParagraph(parentIndex + 1, text);
+
+        if (cursorPos > 0) {
+          position = doc.newPosition(paragraph.getChild(0), cursorPos);
+        } else {
+          position = doc.newPosition(paragraph.getChild(0), text.length + cursorPos);
+        }
+        doc.setCursor(position);
+        return text + ' inserted after image.';
+      }
     }
   }
+  return alert('Please select a single image first.');
+}
+
+function alert(message) {
+  ui.alert(message);
+  return message;
 }
